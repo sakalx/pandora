@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import store from './redux-core/store';
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import {MuiThemeProvider} from '@material-ui/core/styles';
 import muiTheme from './theme';
 
 import ErrorBoundary from './components/ErrorBoundary';
@@ -14,26 +14,14 @@ import App from './App'
 import './old-css-support/css/site-styles.css';
 
 ReactDOM.render(
-  <MuiThemeProvider muiTheme={getMuiTheme(muiTheme)}>
-    <Provider store={store}>
-      <ErrorBoundary>
-        <App/>
-      </ErrorBoundary>
-    </Provider>
-  </MuiThemeProvider>
+  <React.Fragment>
+    <CssBaseline/>
+    <MuiThemeProvider theme={muiTheme}>
+      <Provider store={store}>
+        <ErrorBoundary>
+          <App/>
+        </ErrorBoundary>
+      </Provider>
+    </MuiThemeProvider>
+  </React.Fragment>
   , document.querySelector('#app'));
-/*
-
-import React from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
-
-function MyApp() {
-  return (
-    <React.Fragment>
-      <CssBaseline />
-      {/!* The rest of your application *!/}
-    </React.Fragment>
-  );
-}
-
-export default MyApp;*/

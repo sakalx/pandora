@@ -1,67 +1,44 @@
-import styled from 'styled-components';
+import styled, {withComponent} from 'styled-components';
+import {muiPalette, customColor} from 'root/theme';
 
-import muiTheme, {customColor} from 'root/theme';
-
-const {palette} = muiTheme;
-
-import FlatButton from 'material-ui/FlatButton';
+import Button from '@material-ui/core/Button';
 import GoogleLogin from 'react-google-login';
-
-export const Title = styled('h1')`
-  color: ${palette.accent3Color};
-  font-size: 44px;
-  margin-bottom: 15px;
-`;
-
-export const Description = styled('p')`
-  font-size: 12px;
-`;
-
-export const Link = styled('span')`
-  color: ${palette.primary1Color};
-  cursor: pointer;
-`;
 
 export const WrapButtons = styled('div')`
   display: flex;
   justify-content: space-around;
-  margin-top: 15px;
+  margin: 15px 0;
 `;
 
-export const FailedMsg = styled('div')`
-  color: ${palette.accent1Color};
+export const LoginBtn = styled(Button)`
+  width: 100%;
 `;
 
-export const SocialLoginTitle = styled('p')`
-  color: ${palette.accent3Color};
-  margin-top: 25px;
-  text-align: left;
+export const SocialLoginBtn = styled('button')`
+  align-items: center;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex: 1;
+  height: 36px;
+  justify-content: space-evenly;
+  outline:none;
+  width: 137px;
+  
+  &:hover {
+   opacity: .9;
+   }
 `;
 
-export const FacebookLoginBtn = styled('button')`
+export const FacebookLoginBtn = SocialLoginBtn.extend`
   background: ${customColor.facebookColor};
-  color: ${palette.alternateTextColor};
-  width: 137px;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  border: none;
-  cursor: pointer;
-  outline:none;
-  height: 36px;
-  font-size: 18px;
+  color: ${muiPalette.common.white};
+  margin-right: 5px;
 `;
 
-export const GoogleLoginBtn = styled(GoogleLogin)`
+export const GoogleLoginBtn = SocialLoginBtn.withComponent(GoogleLogin).extend`
   background: ${customColor.googleColor};
-  color: ${palette.alternateTextColor};
-  width: 137px;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  border: none;
-  cursor: pointer;
-  outline:none;
-  height: 36px;
-  font-size: 18px;
+  color: ${muiPalette.common.white};
+  margin-left: 5px;
 `;

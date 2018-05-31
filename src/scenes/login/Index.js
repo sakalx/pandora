@@ -13,13 +13,13 @@ import srcLogo from 'root/assets/img/bidwin-logo-2.png'
 
 class LoginScreen extends React.PureComponent {
   state = {
-    registeringForm: false,
+    loginForm: true,
   };
 
-  toggleForm = () => this.setState({registeringForm: !this.state.registeringForm});
+  toggleForm = () => this.setState({loginForm: !this.state.loginForm});
 
   render() {
-    const {registeringForm} = this.state;
+    const {loginForm} = this.state;
 
     return (
       <Wrap>
@@ -29,10 +29,10 @@ class LoginScreen extends React.PureComponent {
             BidWin is a next-generation content delivery and monetization platform poweredby
           </LogoDescription>
         </Left>
-        <Right zDepth={3}>
-          {registeringForm
-            ? <RegisterForm goToLogin={this.toggleForm}/>
-            : <LoginForm goToRegister={this.toggleForm}/>
+        <Right elevation={24}>
+          {loginForm
+            ? <LoginForm goToRegister={this.toggleForm}/>
+            : <RegisterForm goToLogin={this.toggleForm}/>
           }
         </Right>
       </Wrap>
@@ -40,24 +40,4 @@ class LoginScreen extends React.PureComponent {
   }
 }
 
-export default LoginScreen;
-
-/*
-<div className='canvas'>
-
-          <span className='loginLeft'>
-            <div className='logo'>
-              <img src={logo} alt={'bidwin logo'}/>
-              <p className='sansP'>
-                BidWin is a next-generation content delivery and monetization platform poweredby
-              </p>
-            </div>
-          </span>
-
-  <span className='loginRight'>
-          {registeringForm
-            ? <RegisterForm goToLogin={this.toggleForm}/>
-            : <LoginForm goToRegister={this.toggleForm}/>
-          }
-          </span>
-</div>*/
+export default LoginScreen

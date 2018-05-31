@@ -6,47 +6,34 @@ import {screen} from 'root/redux-core/types';
 import {navigate} from 'root/redux-core/actions/navigate';
 import {addUser, admitUser} from 'root/redux-core/actions/user';
 
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
-import Tooltip from '@material-ui/core/Tooltip';
-
-import GoogleLogin from 'react-google-login';
 import FacebookProvider, {Login as LoginFacebook} from 'react-facebook';
 
-import muiTheme from 'root/theme';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import Snackbar from '@material-ui/core/Snackbar';
 
-const {palette} = muiTheme;
+import {muiPalette} from "root/theme";
 import {
-  Description,
   FacebookLoginBtn,
-  FailedMsg,
   GoogleLoginBtn,
-  Link,
-  SocialLoginTitle,
-  Title,
   WrapButtons,
+  LoginBtn,
 } from './style';
 
-import {
-  FacebookIcon, GoogleIcon,
-  LoginIcon,
-  SignUpIcon
-} from 'root/icons';
-
+import {FacebookIcon, GoogleIcon} from 'root/icons';
 
 class LoginForm extends React.PureComponent {
   state = {
     username: '',
     password: '',
-    loginFailed: false,
+    failedLogin: false,
   };
 
   handleLogin = (name, password) => {
     const authorizedUser = this._isUserAuthorized(name, password);
-
     authorizedUser
       ? this._admitUser(authorizedUser)
-      : this.setState({loginFailed: true});
+      : this.setState({failedLogin: true});
   };
 
   handleLoginFacebook = response => {
@@ -108,56 +95,36 @@ class LoginForm extends React.PureComponent {
 
   render() {
     const {goToRegister} = this.props;
-    const {username, password, loginFailed} = this.state;
-    const errMsg = 'Wrong name or password';
+    const {username, password, failedLogin} = this.state;
 
     return (
       <div>
-        <Title>Login</Title>
-        <Description>
-          Don't have an account?&nbsp;
-          <Link onClick={goToRegister}>
-            Create your account,&nbsp;
-          </Link>
-          it takes a couple of minutes
-        </Description>
-        <TextField hintText='Name'
-                   floatingLabelText='User Name'
-                   fullWidth={true}
+        <TextField label='Name'
+                   type='search'
+                   error={failedLogin}
+                   value={username}
                    onChange={({target}) => this.setState({username: target.value})}
-                   errorText={loginFailed && {errMsg}}
+                   margin='normal'
+                   fullWidth
         />
-        <TextField hintText='Password'
-                   floatingLabelText='User Password'
-                   fullWidth={true}
+        <TextField label='Password'
                    type='password'
+                   error={failedLogin}
+                   value={password}
                    onChange={({target}) => this.setState({password: target.value})}
-                   errorText={loginFailed && {errMsg}}
+                   margin='normal'
+                   fullWidth
         />
-
-        {loginFailed && <FailedMsg>Login Failed!</FailedMsg>}
 
         <WrapButtons>
-          <Tooltip title='You must enter both name and password' placement='top'>
-            <RaisedButton
-              label='Login'
-              primary={true}
-              icon={<LoginIcon viewBox='0 0 500 500'/>}
-              disabled={!(username.length && password.length)}
-              onClick={() => this.handleLogin(username, password)}
-            />
-          </Tooltip>
-          <Tooltip title='Sign up new user' placement='top'>
-            <RaisedButton
-              label='Sign Up'
-              primary={true}
-              icon={<SignUpIcon viewBox='0 0 500 500'/>}
-              onClick={goToRegister}
-            />
-          </Tooltip>
+          <LoginBtn variant='outlined' color='primary' size='large'
+                    disabled={!username.length || !password.length}
+                    onClick={() => this.handleLogin(username, password)}>
+            Login
+          </LoginBtn>
         </WrapButtons>
 
-        <SocialLoginTitle>Login with Social media</SocialLoginTitle>
+        <Typography variant='body2' color='textSecondary'>Or login via</Typography>
         <WrapButtons>
           <FacebookProvider appId='1793837897321083'>
             <LoginFacebook
@@ -166,8 +133,8 @@ class LoginForm extends React.PureComponent {
               onError={this.handleLoginFacebook}
             >
               <FacebookLoginBtn>
-                <FacebookIcon viewBox='0 0 130 130' color={palette.alternateTextColor}/>
-                <span>Facebook</span>
+                <FacebookIcon viewBox='0 0 130 130' style={{color: muiPalette.common.white}}/>
+                <Typography variant='button' color='inherit'>Facebook</Typography>
               </FacebookLoginBtn>
             </LoginFacebook>
           </FacebookProvider>
@@ -177,10 +144,18 @@ class LoginForm extends React.PureComponent {
             onFailure={this.handleLoginGoogle}
             style={{}}
           >
-            <GoogleIcon viewBox='0 0 520 520' color={palette.alternateTextColor}/>
-            <span>Google</span>
+            <GoogleIcon viewBox='0 0 520 520' style={{color: muiPalette.common.white}}/>
+            <Typography variant='button' color='inherit'>Google</Typography>
           </GoogleLoginBtn>
         </WrapButtons>
+
+        <Snackbar
+          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+          open={failedLogin}
+          onClose={() => this.setState({failedLogin: false})}
+          ContentProps={{'aria-describedby': 'login__err-msg'}}
+          message={<span id='login__err-msg'>Name or Password incorrect</span>}
+        />
       </div>
     )
   }

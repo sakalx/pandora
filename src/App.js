@@ -7,7 +7,7 @@ import {screen} from './redux-core/types';
 import {navigate} from './redux-core/actions/navigate';
 import {getUsers, admitUser} from './redux-core/actions/user';
 
-import CircularProgress from 'material-ui/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import MainScreen from './scenes/MainScreen';
 import LoginScreen from './scenes/login';
@@ -73,7 +73,7 @@ class App extends React.PureComponent {
 
     return (
       <CenterWrap>
-        {stackScreen[screen.ROOT_SCREEN] && <CircularProgress size={80} thickness={5}/>}
+        {stackScreen[screen.ROOT_SCREEN] && <CircularProgress size={54}/>}
         {stackScreen[screen.LOGIN] && <LoginScreen/>}
         {isPartOfMainScreen && <MainScreen/>}
       </CenterWrap>
