@@ -1,4 +1,4 @@
-import stripTags from '../../helpers/strip-tags';
+import stripTags from 'root/helpers/strip-tags';
 import {promise, article} from '../types';
 
 const {PENDING, REJECTED, FULFILLED} = promise;

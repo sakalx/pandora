@@ -4,12 +4,14 @@ import {user} from '../types';
 // TODO not clearly about this reducer
 import RedditReducer from './redditReducer';
 
+import snackBar from './snackBar';
 import userData from './user-data';
 import queries from './queries';
 import aiArticle from './ai-article';
 import stackScreen from './stack-screen';
 
 const appReducer = combineReducers({
+  snackBar,
   userData,
   aiArticle,
   queries,

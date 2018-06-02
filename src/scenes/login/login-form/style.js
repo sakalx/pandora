@@ -11,12 +11,12 @@ export const WrapButtons = styled('div')`
 `;
 
 export const LoginBtn = styled(Button)`
-  width: 100%;
+  flex: 1;
 `;
 
 export const SocialLoginBtn = styled('button')`
   align-items: center;
-  border-radius: 2px;
+  border-radius: 4px;
   border: none;
   cursor: pointer;
   display: flex;

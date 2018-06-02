@@ -6,8 +6,10 @@ import {setUserToken, getUserToken} from './helpers/local-storage';
 import {screen} from './redux-core/types';
 import {navigate} from './redux-core/actions/navigate';
 import {getUsers, admitUser} from './redux-core/actions/user';
+import {toggleSnackbar} from './redux-core/actions/snackBar';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import MainScreen from './scenes/MainScreen';
 import LoginScreen from './scenes/login';
@@ -64,7 +66,7 @@ class App extends React.PureComponent {
   }
 
   render() {
-    const {stackScreen} = this.props;
+    const {stackScreen, snackBar, toggleSnackbar} = this.props;
 
     const isPartOfMainScreen = Object.keys(stackScreen)
       .filter(screenName =>
@@ -72,24 +74,38 @@ class App extends React.PureComponent {
       .some(screenName => stackScreen[screenName]);
 
     return (
-      <CenterWrap>
-        {stackScreen[screen.ROOT_SCREEN] && <CircularProgress size={54}/>}
-        {stackScreen[screen.LOGIN] && <LoginScreen/>}
-        {isPartOfMainScreen && <MainScreen/>}
-      </CenterWrap>
+      <React.Fragment>
+        <CenterWrap>
+          {stackScreen[screen.ROOT_SCREEN] && <CircularProgress size={54}/>}
+          {stackScreen[screen.LOGIN] && <LoginScreen/>}
+          {isPartOfMainScreen && <MainScreen/>}
+        </CenterWrap>
+
+        <Snackbar
+          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+          open={snackBar.showSnackBar}
+          onClose={() => toggleSnackbar()}
+          ContentProps={{'aria-describedby': 'snackBar-msg'}}
+          message={
+            <span id='snackBar-msg'>{snackBar.snackBarMsg}</span>
+          }
+        />
+      </React.Fragment>
     )
   }
 }
 
-const mapStateToProps = ({stackScreen, userData}) => ({
+const mapStateToProps = ({stackScreen, userData, snackBar}) => ({
+  snackBar,
   stackScreen,
   userData,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  navigate,
-  getUsers,
   admitUser,
+  getUsers,
+  navigate,
+  toggleSnackbar,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

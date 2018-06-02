@@ -1,6 +1,7 @@
 import React from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import {toggleSnackbar} from 'root/redux-core/actions/snackBar';
 
 import {screen} from 'root/redux-core/types';
 import {navigate} from 'root/redux-core/actions/navigate';
@@ -10,7 +11,8 @@ import FacebookProvider, {Login as LoginFacebook} from 'react-facebook';
 
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Snackbar from '@material-ui/core/Snackbar';
+import Slide from '@material-ui/core/Slide';
+import Collapse from '@material-ui/core/Collapse';
 
 import {muiPalette} from "root/theme";
 import {
@@ -26,14 +28,15 @@ class LoginForm extends React.PureComponent {
   state = {
     username: '',
     password: '',
-    failedLogin: false,
   };
 
   handleLogin = (name, password) => {
+    const {toggleSnackbar} = this.props;
     const authorizedUser = this._isUserAuthorized(name, password);
+
     authorizedUser
       ? this._admitUser(authorizedUser)
-      : this.setState({failedLogin: true});
+      : toggleSnackbar('Sorry, you entered an incorrect email address or password.');
   };
 
   handleLoginFacebook = response => {
@@ -94,14 +97,14 @@ class LoginForm extends React.PureComponent {
   };
 
   render() {
-    const {goToRegister} = this.props;
-    const {username, password, failedLogin} = this.state;
+    const {snackBar} = this.props;
+    const {username, password} = this.state;
 
     return (
       <div>
         <TextField label='Name'
                    type='search'
-                   error={failedLogin}
+                   error={snackBar.showSnackBar}
                    value={username}
                    onChange={({target}) => this.setState({username: target.value})}
                    margin='normal'
@@ -109,66 +112,66 @@ class LoginForm extends React.PureComponent {
         />
         <TextField label='Password'
                    type='password'
-                   error={failedLogin}
+                   error={snackBar.showSnackBar}
                    value={password}
                    onChange={({target}) => this.setState({password: target.value})}
                    margin='normal'
                    fullWidth
         />
 
-        <WrapButtons>
-          <LoginBtn variant='outlined' color='primary' size='large'
-                    disabled={!username.length || !password.length}
-                    onClick={() => this.handleLogin(username, password)}>
-            Login
-          </LoginBtn>
-        </WrapButtons>
+        <Collapse in={username.length && password.length}>
+          <WrapButtons>
+            <LoginBtn variant='outlined' color='primary' size='large'
+                      onClick={() => this.handleLogin(username, password)}>
+              Login
+            </LoginBtn>
+          </WrapButtons>
+        </Collapse>
 
         <Typography variant='body2' color='textSecondary'>Or login via</Typography>
         <WrapButtons>
-          <FacebookProvider appId='1793837897321083'>
-            <LoginFacebook
-              scope='email'
-              onResponse={this.handleLoginFacebook}
-              onError={this.handleLoginFacebook}
+          <Slide timeout={500} direction='down' in={true}>
+            <FacebookProvider appId='1793837897321083'>
+              <LoginFacebook
+                scope='email'
+                onResponse={this.handleLoginFacebook}
+                onError={this.handleLoginFacebook}
+              >
+                <FacebookLoginBtn>
+                  <FacebookIcon viewBox='0 0 130 130' style={{color: muiPalette.common.white}}/>
+                  <Typography variant='button' color='inherit'>Facebook</Typography>
+                </FacebookLoginBtn>
+              </LoginFacebook>
+            </FacebookProvider>
+          </Slide>
+          <Slide timeout={700} direction='down' in={true}>
+            <GoogleLoginBtn
+              clientId='999108389649-2kil7c0ipbmf5q2hcjnl35alln5t7cko.apps.googleusercontent.com'
+              onSuccess={this.handleLoginGoogle}
+              onFailure={this.handleLoginGoogle}
+              style={{}}
             >
-              <FacebookLoginBtn>
-                <FacebookIcon viewBox='0 0 130 130' style={{color: muiPalette.common.white}}/>
-                <Typography variant='button' color='inherit'>Facebook</Typography>
-              </FacebookLoginBtn>
-            </LoginFacebook>
-          </FacebookProvider>
-          <GoogleLoginBtn
-            clientId='999108389649-2kil7c0ipbmf5q2hcjnl35alln5t7cko.apps.googleusercontent.com'
-            onSuccess={this.handleLoginGoogle}
-            onFailure={this.handleLoginGoogle}
-            style={{}}
-          >
-            <GoogleIcon viewBox='0 0 520 520' style={{color: muiPalette.common.white}}/>
-            <Typography variant='button' color='inherit'>Google</Typography>
-          </GoogleLoginBtn>
+              <GoogleIcon viewBox='0 0 520 520' style={{color: muiPalette.common.white}}/>
+              <Typography variant='button' color='inherit'>Google</Typography>
+            </GoogleLoginBtn>
+          </Slide>
         </WrapButtons>
 
-        <Snackbar
-          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
-          open={failedLogin}
-          onClose={() => this.setState({failedLogin: false})}
-          ContentProps={{'aria-describedby': 'login__err-msg'}}
-          message={<span id='login__err-msg'>Name or Password incorrect</span>}
-        />
       </div>
     )
   }
 }
 
-const mapStateToProps = ({userData}) => ({
+const mapStateToProps = ({userData, snackBar}) => ({
+  snackBar,
   userData,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  navigate,
-  admitUser,
   addUser,
+  admitUser,
+  navigate,
+  toggleSnackbar,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);

@@ -4,6 +4,10 @@ export const promise = {
   FULFILLED: '_FULFILLED',
 };
 
+export const snack = {
+  TOGGLE_SNACKBAR: 'TOGGLE_SNACKBAR',
+};
+
 export const query = {
   GET_HISTORY: 'GET_QUERY_HISTORY',
   ADD: 'ADD_QUERY',
