@@ -21,7 +21,7 @@ export const Right = styled(Paper)`
   text-align: center;
 `;
 
-export const LogoDescription = styled('p')`
+export const Slogan = styled('p')`
   color: #fff;
   font-size: 16px;
 `;

@@ -4,7 +4,7 @@ export const promise = {
   FULFILLED: '_FULFILLED',
 };
 
-export const snack = {
+export const notification = {
   TOGGLE_SNACKBAR: 'TOGGLE_SNACKBAR',
 };
 

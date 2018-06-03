@@ -1,6 +1,6 @@
-import {snack} from '../types';
+import {notification} from '../types';
 
-const {TOGGLE_SNACKBAR} = snack;
+const {TOGGLE_SNACKBAR} = notification;
 
 export function toggleSnackbar(message = '') {
   return {

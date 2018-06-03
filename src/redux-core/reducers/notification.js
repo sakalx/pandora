@@ -1,13 +1,13 @@
-import {snack} from '../types';
+import {notification as alert} from '../types';
 
-const {TOGGLE_SNACKBAR} = snack;
+const {TOGGLE_SNACKBAR} = alert;
 
 const initState = {
   showSnackBar: false,
   snackBarMsg: '',
 };
 
-export default function snackBar(state = initState, {type, payload}) {
+export default function notification(state = initState, {type, payload}) {
   if (type === TOGGLE_SNACKBAR) {
     return ({
       showSnackBar: !state.showSnackBar,

@@ -1,7 +1,7 @@
 import React from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {toggleSnackbar} from 'root/redux-core/actions/snackBar';
+import {toggleSnackbar} from 'root/redux-core/actions/notification';
 
 import {screen} from 'root/redux-core/types';
 import {navigate} from 'root/redux-core/actions/navigate';
@@ -9,10 +9,10 @@ import {addUser, admitUser} from 'root/redux-core/actions/user';
 
 import FacebookProvider, {Login as LoginFacebook} from 'react-facebook';
 
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Slide from '@material-ui/core/Slide';
 import Collapse from '@material-ui/core/Collapse';
+import Slide from '@material-ui/core/Slide';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 
 import {muiPalette} from "root/theme";
 import {
@@ -97,14 +97,15 @@ class LoginForm extends React.PureComponent {
   };
 
   render() {
-    const {snackBar} = this.props;
+    const {notification} = this.props;
     const {username, password} = this.state;
 
     return (
       <div>
         <TextField label='Name'
                    type='search'
-                   error={snackBar.showSnackBar}
+                   autoFocus={true}
+                   error={notification.showSnackBar}
                    value={username}
                    onChange={({target}) => this.setState({username: target.value})}
                    margin='normal'
@@ -112,14 +113,14 @@ class LoginForm extends React.PureComponent {
         />
         <TextField label='Password'
                    type='password'
-                   error={snackBar.showSnackBar}
+                   error={notification.showSnackBar}
                    value={password}
                    onChange={({target}) => this.setState({password: target.value})}
                    margin='normal'
                    fullWidth
         />
 
-        <Collapse in={username.length && password.length}>
+        <Collapse in={!!(username.length && password.length)}>
           <WrapButtons>
             <LoginBtn variant='outlined' color='primary' size='large'
                       onClick={() => this.handleLogin(username, password)}>
@@ -162,8 +163,8 @@ class LoginForm extends React.PureComponent {
   }
 }
 
-const mapStateToProps = ({userData, snackBar}) => ({
-  snackBar,
+const mapStateToProps = ({userData, notification}) => ({
+  notification,
   userData,
 });
 

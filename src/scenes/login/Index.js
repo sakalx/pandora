@@ -1,16 +1,18 @@
 import React from 'react';
 
-import SwipeableViews from 'react-swipeable-views';
 import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
+import PersonAdd from '@material-ui/icons/PersonAdd';
+import PersonPinIcon from '@material-ui/icons/PersonPin';
+import SwipeableViews from 'react-swipeable-views';
 import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 
-import RegisterForm from './RegisterForm';
+import SignUpForm from './signup-form';
 import LoginForm from './login-form';
 
 import {
   Left,
-  LogoDescription,
+  Slogan,
   Right,
   Wrap,
 } from './style';
@@ -24,9 +26,9 @@ class LoginScreen extends React.PureComponent {
       <Wrap>
         <Left>
           <img src={srcLogo} alt={'bidwin logo'}/>
-          <LogoDescription>
+          <Slogan>
             BidWin is a next-generation content delivery and monetization platform poweredby
-          </LogoDescription>
+          </Slogan>
         </Left>
         <Right elevation={24}>
           <AppBar position='static' color='default'>
@@ -36,15 +38,15 @@ class LoginScreen extends React.PureComponent {
                   textColor='primary'
                   fullWidth
             >
-              <Tab label='Login'/>
-              <Tab label='SignUp'/>
+              <Tab label='Login' icon={<PersonPinIcon/>}/>
+              <Tab label='SignUp' icon={<PersonAdd/>}/>
             </Tabs>
           </AppBar>
           <SwipeableViews index={this.state.value}
                           onChangeIndex={(index) => this.setState({value: index})}
           >
             <LoginForm/>
-            <div >Item One</div>
+            <SignUpForm/>
           </SwipeableViews>
         </Right>
       </Wrap>

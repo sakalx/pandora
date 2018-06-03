@@ -6,7 +6,7 @@ import {setUserToken, getUserToken} from './helpers/local-storage';
 import {screen} from './redux-core/types';
 import {navigate} from './redux-core/actions/navigate';
 import {getUsers, admitUser} from './redux-core/actions/user';
-import {toggleSnackbar} from './redux-core/actions/snackBar';
+import {toggleSnackbar} from './redux-core/actions/notification';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -66,7 +66,7 @@ class App extends React.PureComponent {
   }
 
   render() {
-    const {stackScreen, snackBar, toggleSnackbar} = this.props;
+    const {stackScreen, notification, toggleSnackbar} = this.props;
 
     const isPartOfMainScreen = Object.keys(stackScreen)
       .filter(screenName =>
@@ -83,11 +83,11 @@ class App extends React.PureComponent {
 
         <Snackbar
           anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
-          open={snackBar.showSnackBar}
+          open={notification.showSnackBar}
           onClose={() => toggleSnackbar()}
           ContentProps={{'aria-describedby': 'snackBar-msg'}}
           message={
-            <span id='snackBar-msg'>{snackBar.snackBarMsg}</span>
+            <span id='snackBar-msg'>{notification.snackBarMsg}</span>
           }
         />
       </React.Fragment>
@@ -95,8 +95,8 @@ class App extends React.PureComponent {
   }
 }
 
-const mapStateToProps = ({stackScreen, userData, snackBar}) => ({
-  snackBar,
+const mapStateToProps = ({stackScreen, userData, notification}) => ({
+  notification,
   stackScreen,
   userData,
 });
