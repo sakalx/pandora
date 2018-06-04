@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
 export const Wrap = styled('div')`
   align-items: center;
@@ -21,7 +22,6 @@ export const Right = styled(Paper)`
   text-align: center;
 `;
 
-export const Slogan = styled('p')`
-  color: #fff;
-  font-size: 16px;
+export const Slogan = styled(Typography)`
+  color: #fff !important;
 `;

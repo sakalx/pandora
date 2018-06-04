@@ -6,9 +6,10 @@ import {screen} from 'root/redux-core/types';
 import {navigate} from 'root/redux-core/actions/navigate';
 import {addUser} from 'root/redux-core/actions/user';
 
-import {camelCase, stringToCamelCase} from 'root/helpers/camel-case';
+import {camelCaseToString} from 'root/helpers/camel-case';
 
 import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
 import Paper from '@material-ui/core/Paper';
 import Step from '@material-ui/core/Step';
 import StepContent from '@material-ui/core/StepContent';
@@ -18,75 +19,21 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 
-
-{/*<TextField label={getSteps(step)}
-           type='search'
-           value={this.state[Company].value}
-           onChange={({target}) => console.log(target.value)}
-           margin='normal'
-           fullWidth
-/>;*/}
-
-const getStepContent = step => {
-  switch (step) {
-    case 0:
-      return   'vdrv';
-    case 1:
-      return 'An ad group contains one or more ads which target a shared set of keywords.';
-    case 2:
-      return `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`;
-    default:
-      return 'Unknown step';
-  }
-};
-
-// Use 8 or more characters with a mix of letters, numbers & symbols
+// Use 6 or more characters with a mix of letters, numbers & symbols
 // You can use letters, numbers & periods
 
 class SignUpForm extends React.PureComponent {
   state = {
     steps: {
-      // index 0 = value, index 1 = failed / error
-      fullName: ['', null],
-      userName: ['', null],
-      email: ['', null],
-      company: ['', null],
-      password: ['', null],
-      confirmPassword: ['', null],
+      // index 0 === value, index 1 === error, index 2 === error Message,
+      fullName: ['', false, 'You can use letters & numbers'],
+      userName: ['', false, 'You can use letters & numbers'],
+      email: ['', false, 'email@example.com'],
+      company: ['', false, 'You can use letters & numbers'],
+      password: ['', false, 'Use 6 or more characters with a mix of letters, numbers & symbols'],
+      confirmPassword: ['', false, 'Those passwords didn\'t match. Try again.'],
     },
     activeStep: 0,
-  };
-
-  getSteps = () => Object.keys(this.state.steps).map(camelCase);
-
-  getStepContent = label => {
-
-    const step = stringToCamelCase(label);
-
-    return (
-      <TextField label={label}
-                 type='search'
-                 value={this.state.steps[step][0]}
-                 onChange={({target}) => this.setState({
-                   steps: {
-                     ...this.state.steps,
-                     [step]: [target.value, null], //   userName: ['', null],
-                   }
-                 })}
-                 margin='normal'
-                 fullWidth
-      />
-    )
-
-/*    if (label === 'Password') {
-      return (
-        <button onClick={() => label()}>v</button>
-      )
-    }*/
-
   };
 
   handleRegister = () => {
@@ -107,25 +54,8 @@ class SignUpForm extends React.PureComponent {
     // navigate(screen.ROOT_SCREEN);
   };
 
-  validateForm = () => {
-    const {name, email, company, username, password, passwordVerification} = this.state;
-
-    const emailValid = this._validEmail(email);
-    const nameValid = this._validName(name);
-    const companyValid = this._validName(company);
-    const usernameValid = this._validName(username);
-    const passwordValid = this._validPassword(password);
-    const passwordVerified = password === passwordVerification;
-
-    return (nameValid && emailValid && companyValid && usernameValid && passwordValid && passwordVerified);
-  };
-
-  _validEmail = email => /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/igm.test(email);
-  _validName = name => /^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/igm.test(name);
-  _validPassword = password => /(?=^.{6,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/igm.test(password);
-
-
-  handleNext = () => {
+  handleNext = step => {
+    this._stepValidation(step);
     this.setState({
       activeStep: this.state.activeStep + 1,
     });
@@ -143,43 +73,110 @@ class SignUpForm extends React.PureComponent {
     });
   };
 
-  isStepFailed = step => {
-    return step === 1;
+  isValidLength = step => {
+    const {steps} = this.state;
+    const valueLength = steps[step][0].length;
+
+    switch (step) {
+      case 'fullName':
+        return valueLength > 6;
+      case 'userName':
+        return valueLength > 2;
+      case 'email':
+        return valueLength > 5;
+      case 'company':
+        return valueLength > 3;
+      case 'password':
+        return valueLength > 5;
+      case 'confirmPassword':
+        return valueLength > 5;
+    }
+  };
+
+  _stepValidation = step => {
+    const {steps} = this.state;
+    const [, , errMsg] = steps[step];
+    const [stepValue] = steps[step];
+
+    const validString = string => /^[A-Z0-9][a-zA-Z0-9-\s]{1,20}$/igm.test(string);
+    const validEmail = email => /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/igm.test(email);
+    const validPassword = password => /(?=^.{6,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/igm.test(password);
+    const validConfirmPassword = stepValue => steps.password[0] === stepValue;
+
+    const validation = (step, isValid) => this.setState({
+      steps: {
+        ...steps,
+        [step]: [stepValue, !isValid(stepValue), errMsg]
+      }
+    });
+
+    switch (step) {
+      case 'fullName':
+      case 'userName':
+      case 'company':
+        validation(step, validString);
+        break;
+      case 'email':
+        validation(step, validEmail);
+        break;
+      case 'password':
+        validation(step, validPassword);
+        break;
+      case 'confirmPassword':
+        validation(step, validConfirmPassword);
+    }
+  };
+
+  renderStepContent = step => {
+    const {steps} = this.state;
+    const [, ...stepParam] = steps[step];
+    const [stepValue] = this.state.steps[step];
+    const type = step === 'password' || step === 'confirmPassword'
+      ? 'password'
+      : 'search';
+
+    return (
+      <TextField label={camelCaseToString(step)}
+                 type={type}
+                 value={stepValue}
+                 onChange={({target}) => this.setState({
+                   steps: {
+                     ...steps,
+                     [step]: [target.value, ...stepParam],
+                   }
+                 })}
+                 margin='normal'
+                 fullWidth
+      />
+    )
   };
 
   render() {
-    /*  const {name, email, company, password, passwordVerification, username} = this.state;
-
-      const validForm = Object.values(this.state)
-        .every(field => field.length) && this.validateForm();*/
-
-    const steps = this.getSteps();
-    const {activeStep} = this.state;
-
-    console.log(this.getSteps());
-    console.log(this.state);
+    const {activeStep, steps} = this.state;
+    const listOfSteps = Object.keys(steps);
 
     return (
       <div>
         <Stepper activeStep={activeStep} orientation='vertical'>
-          {steps.map((label, index) => {
-
-
+          {listOfSteps.map(step => {
             const labelProps = {};
+            const [, stepError] = steps[step];
+            const [, , stepErrorMsg] = steps[step];
 
-            labelProps.optional = (
-              <Typography variant="caption" color="error">
-                Alert message
-              </Typography>
-            );
-            if (this.isStepFailed(index)) {
+            if (stepError) {
               labelProps.error = true;
+              labelProps.optional = (
+                <Typography variant='caption' color='error'>
+                  {stepErrorMsg}
+                </Typography>
+              );
             }
+
             return (
-              <Step key={label} >
-                <StepLabel {...labelProps}>{label}</StepLabel>
+              <Step key={step}>
+                <StepLabel {...labelProps}>{camelCaseToString(step)}</StepLabel>
                 <StepContent>
-                  {this.getStepContent(label)}
+                  {this.renderStepContent(step)}
                   <div>
                     <div>
                       <Button
@@ -188,13 +185,15 @@ class SignUpForm extends React.PureComponent {
                       >
                         Back
                       </Button>
-                      <Button
-                        variant="raised"
-                        color="primary"
-                        onClick={this.handleNext}
-                      >
-                        {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                      </Button>
+                      <Collapse in={this.isValidLength(step)}>
+                        <Button
+                          variant='raised'
+                          color='primary'
+                          onClick={() => this.handleNext(step)}
+                        >
+                          {activeStep === listOfSteps.length - 1 ? 'SignUp' : 'Next'}
+                        </Button>
+                      </Collapse>
                     </div>
                   </div>
                 </StepContent>
@@ -205,9 +204,9 @@ class SignUpForm extends React.PureComponent {
         </Stepper>
         {activeStep === steps.length && (
           <Paper square elevation={0}>
-            <Typography>All steps completed - you&quot;re finished</Typography>
+            <Typography>All steps completed - you are finished</Typography>
             <Button onClick={this.handleReset}>
-              Reset
+              Reset / Login
             </Button>
           </Paper>
         )}
@@ -222,51 +221,3 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 }, dispatch);
 
 export default connect(null, mapDispatchToProps)(SignUpForm);
-
-
-{/*
-<div className='Register'>
-  <form>
-    <InputField id={'reg__name'} label={'Name'}
-                placeholder={'Enter name with 2-20 chars'}
-                type={'text'} value={name}
-                handleChange={({target}) => this.setState({name: target.value})}
-    />
-    <InputField id={'reg__email'} label={'Email address'}
-                placeholder={'Enter email: email@example.com'}
-                type={'email'} value={email}
-                handleChange={({target}) => this.setState({email: target.value})}
-    />
-    <InputField id={'reg__company'} label={'Company name'}
-                placeholder={'Enter company name with 2-20 chars'}
-                type={'text'} value={company}
-                handleChange={({target}) => this.setState({company: target.value})}
-    />
-    <InputField id={'reg__username'} label={'User name'}
-                placeholder={'Enter user name with 2-20 chars'}
-                type={'text'} value={username}
-                handleChange={({target}) => this.setState({username: target.value})}
-    />
-    <InputField id={'reg__password'} label={'Password'}
-                placeholder={'Enter password: UpperCase, LowerCase, Number/SpecialChar and min 6 chars'}
-                type={'password'} value={password}
-                handleChange={({target}) => this.setState({password: target.value})}
-    />
-    <InputField id={'reg__password-verification'} label={'Verify Password'}
-                placeholder={'Verify password'}
-                type={'password'} value={passwordVerification}
-                handleChange={({target}) => this.setState({passwordVerification: target.value})}
-    />
-    <div className='tooltip'>
-      <button onClick={this.handleRegister}>
-        Register
-        {!validForm &&
-        <span className='tooltiptext'>
-                All fields should be valid
-              </span>
-        }
-      </button>
-    </div>
-  </form>
-</div>*/
-}

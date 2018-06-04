@@ -26,7 +26,7 @@ import {FacebookIcon, GoogleIcon} from 'root/icons';
 
 class LoginForm extends React.PureComponent {
   state = {
-    username: '',
+    name: '',
     password: '',
   };
 
@@ -96,34 +96,29 @@ class LoginForm extends React.PureComponent {
     }
   };
 
+  renderInputField = value =>
+    <TextField label={value[0].toUpperCase() + value.slice(1)}
+               type={value === 'password' ? 'password' : 'search'}
+               error={this.props.notification.showSnackBar}
+               value={this.state[value]}
+               onChange={({target}) => this.setState({[value]: target.value})}
+               margin='normal'
+               fullWidth
+    />;
+
+
   render() {
-    const {notification} = this.props;
-    const {username, password} = this.state;
+    const {name, password} = this.state;
 
     return (
       <div>
-        <TextField label='Name'
-                   type='search'
-                   autoFocus={true}
-                   error={notification.showSnackBar}
-                   value={username}
-                   onChange={({target}) => this.setState({username: target.value})}
-                   margin='normal'
-                   fullWidth
-        />
-        <TextField label='Password'
-                   type='password'
-                   error={notification.showSnackBar}
-                   value={password}
-                   onChange={({target}) => this.setState({password: target.value})}
-                   margin='normal'
-                   fullWidth
-        />
+        {this.renderInputField('name')}
+        {this.renderInputField('password')}
 
-        <Collapse in={!!(username.length && password.length)}>
+        <Collapse in={!!(name.length && password.length)}>
           <WrapButtons>
             <LoginBtn variant='outlined' color='primary' size='large'
-                      onClick={() => this.handleLogin(username, password)}>
+                      onClick={() => this.handleLogin(name, password)}>
               Login
             </LoginBtn>
           </WrapButtons>

@@ -1,9 +1,18 @@
-export const camelCase = string =>
+export const camelCaseToString = string =>
   string.split(/(?=[A-Z])/)
-    .map(word =>
-      word[0].toUpperCase() + word.slice(1)
+    .map((word, index) =>
+      index === 0
+        ? word[0].toUpperCase() + word.slice(1)
+        : word[0].toLowerCase() + word.slice(1)
     )
     .join(' ');
+/*
 
 export const stringToCamelCase = string =>
-  string[0].toLowerCase() + string.slice(1).replace(' ', '');
+  string.replace(/(?:^\w|[A-Z]|\b\w)/g,
+    (letter, index) =>
+      index === 0
+        ? letter.toLowerCase()
+        : letter.toUpperCase()
+  )
+    .replace(/\s+/g, '');*/
