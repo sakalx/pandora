@@ -1,8 +1,21 @@
 import styled, {withComponent} from 'styled-components';
 import {muiPalette, customColor} from 'root/theme';
 
+import Typography from '@material-ui/core/Typography';
+
 import Button from '@material-ui/core/Button';
 import GoogleLogin from 'react-google-login';
+
+export const Wrap = styled('section')`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-around;
+`;
+
+export const Title = styled(Typography)`
+  display: flex !important;
+`;
 
 export const WrapButtons = styled('div')`
   display: flex;

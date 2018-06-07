@@ -9,18 +9,12 @@ import {addUser} from 'root/redux-core/actions/user';
 import {camelCaseToString} from 'root/helpers/camel-case';
 
 import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
-import Paper from '@material-ui/core/Paper';
 import Step from '@material-ui/core/Step';
 import StepContent from '@material-ui/core/StepContent';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-
-
-// Use 6 or more characters with a mix of letters, numbers & symbols
-// You can use letters, numbers & periods
 
 class SignUpForm extends React.PureComponent {
   state = {
@@ -36,41 +30,32 @@ class SignUpForm extends React.PureComponent {
     activeStep: 0,
   };
 
-  handleRegister = () => {
+  handleSignUp = () => {
     const {name, email, company, username, password} = this.state;
     const {addUser, navigate} = this.props;
 
     const newUser = {
       name,
+      username,
       email,
       company,
-      username,
       password,
     };
 
-    addUser(newUser);
     // TODO when response will be valid json
+    console.log('TODO when response will be valid json');
+    //addUser(newUser);
     // go to magic trick login
     // navigate(screen.ROOT_SCREEN);
   };
 
   handleNext = step => {
+    const {steps, activeStep} = this.state;
     this._stepValidation(step);
-    this.setState({
-      activeStep: this.state.activeStep + 1,
-    });
-  };
 
-  handleBack = () => {
-    this.setState({
-      activeStep: this.state.activeStep - 1,
-    });
-  };
-
-  handleReset = () => {
-    this.setState({
-      activeStep: 0,
-    });
+    activeStep === Object.keys(steps).length - 1
+      ? this.handleSignUp()
+      : this.setState({activeStep: this.state.activeStep + 1})
   };
 
   isValidLength = step => {
@@ -79,17 +64,17 @@ class SignUpForm extends React.PureComponent {
 
     switch (step) {
       case 'fullName':
-        return valueLength > 6;
+        return valueLength > 6 && valueLength < 20;
       case 'userName':
-        return valueLength > 2;
+        return valueLength > 2 && valueLength < 20;
       case 'email':
-        return valueLength > 5;
+        return valueLength > 5 && valueLength < 20;
       case 'company':
-        return valueLength > 3;
+        return valueLength > 3 && valueLength < 20;
       case 'password':
-        return valueLength > 5;
+        return valueLength > 5 && valueLength < 20;
       case 'confirmPassword':
-        return valueLength > 5;
+        return valueLength > 5 && valueLength < 20;
     }
   };
 
@@ -98,7 +83,7 @@ class SignUpForm extends React.PureComponent {
     const [, , errMsg] = steps[step];
     const [stepValue] = steps[step];
 
-    const validString = string => /^[A-Z0-9][a-zA-Z0-9-\s]{1,20}$/igm.test(string);
+    const validString = string => /^[a-zA-Z][a-zA-Z0-9-\s]{1,20}$/igm.test(string);
     const validEmail = email => /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/igm.test(email);
     const validPassword = password => /(?=^.{6,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/igm.test(password);
     const validConfirmPassword = stepValue => steps.password[0] === stepValue;
@@ -136,19 +121,36 @@ class SignUpForm extends React.PureComponent {
       : 'search';
 
     return (
-      <TextField label={camelCaseToString(step)}
-                 type={type}
-                 value={stepValue}
+      <TextField fullWidth
+                 margin='normal'
                  onChange={({target}) => this.setState({
                    steps: {
                      ...steps,
                      [step]: [target.value, ...stepParam],
                    }
                  })}
-                 margin='normal'
-                 fullWidth
+                 type={type}
+                 value={stepValue}
+                 label={camelCaseToString(step)}
       />
     )
+  };
+
+  renderStepLabel = step => {
+    const [stepValue] = this.state.steps[step];
+    const passwordLabel = value => value.replace(/./gi, '*');
+
+    const label = value =>
+      <Typography align='left'
+                  color={stepValue.length ? 'primary' : 'textSecondary'}
+                  variant='subheading'>
+        {value}
+      </Typography>;
+
+    return !stepValue.length ? label(camelCaseToString(step))
+      : step === 'password' || step === 'confirmPassword'
+        ? label(passwordLabel(stepValue))
+        : label(stepValue);
   };
 
   render() {
@@ -156,7 +158,7 @@ class SignUpForm extends React.PureComponent {
     const listOfSteps = Object.keys(steps);
 
     return (
-      <div>
+      <section>
         <Stepper activeStep={activeStep} orientation='vertical'>
           {listOfSteps.map(step => {
             const labelProps = {};
@@ -166,35 +168,29 @@ class SignUpForm extends React.PureComponent {
             if (stepError) {
               labelProps.error = true;
               labelProps.optional = (
-                <Typography variant='caption' color='error'>
+                <Typography color='error' variant='caption'>
                   {stepErrorMsg}
                 </Typography>
               );
             }
-
             return (
               <Step key={step}>
-                <StepLabel {...labelProps}>{camelCaseToString(step)}</StepLabel>
+                <StepLabel {...labelProps}>
+                  {this.renderStepLabel(step)}
+                </StepLabel>
                 <StepContent>
                   {this.renderStepContent(step)}
                   <div>
-                    <div>
-                      <Button
-                        disabled={activeStep === 0}
-                        onClick={this.handleBack}
-                      >
-                        Back
-                      </Button>
-                      <Collapse in={this.isValidLength(step)}>
-                        <Button
-                          variant='raised'
-                          color='primary'
-                          onClick={() => this.handleNext(step)}
-                        >
-                          {activeStep === listOfSteps.length - 1 ? 'SignUp' : 'Next'}
-                        </Button>
-                      </Collapse>
-                    </div>
+                    {activeStep !== 0
+                    && <Button onClick={() => this.setState({activeStep: activeStep - 1})}>
+                      Back
+                    </Button>}
+                    <Button color='primary'
+                            disabled={!this.isValidLength(step)}
+                            onClick={() => this.handleNext(step)}
+                            variant='raised'>
+                      {activeStep === listOfSteps.length - 1 ? 'SignUp' : 'Next'}
+                    </Button>
                   </div>
                 </StepContent>
               </Step>
@@ -202,15 +198,7 @@ class SignUpForm extends React.PureComponent {
           })
           }
         </Stepper>
-        {activeStep === steps.length && (
-          <Paper square elevation={0}>
-            <Typography>All steps completed - you are finished</Typography>
-            <Button onClick={this.handleReset}>
-              Reset / Login
-            </Button>
-          </Paper>
-        )}
-      </div>
+      </section>
     )
   }
 }

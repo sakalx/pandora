@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+import AppBar from '@material-ui/core/AppBar';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
@@ -8,16 +9,23 @@ export const Wrap = styled('div')`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
 `;
 
-export const Left = styled('section')`
+export const TabsBar = styled(AppBar)`
+  margin-bottom: 5px;
+`;
+
+export const Left = styled('div')`
+  flex: 1;
   margin: 15px;
+  text-align: center;
 `;
 
 export const Right = styled(Paper)`
-  display: inline-block;
-  margin: 15px;
-  min-width: 320px;
+  width: 100%;
+  max-width: 500px;
+  margin: 15px 55px;
   padding: 15px;
   text-align: center;
 `;

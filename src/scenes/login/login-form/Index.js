@@ -10,6 +10,7 @@ import {addUser, admitUser} from 'root/redux-core/actions/user';
 import FacebookProvider, {Login as LoginFacebook} from 'react-facebook';
 
 import Collapse from '@material-ui/core/Collapse';
+import Fade from '@material-ui/core/Fade';
 import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -18,8 +19,10 @@ import {muiPalette} from "root/theme";
 import {
   FacebookLoginBtn,
   GoogleLoginBtn,
-  WrapButtons,
   LoginBtn,
+  Title,
+  Wrap,
+  WrapButtons,
 } from './style';
 
 import {FacebookIcon, GoogleIcon} from 'root/icons';
@@ -89,50 +92,56 @@ class LoginForm extends React.PureComponent {
         company: `${name} Logged on from Social Media`,
       };
 
-      addUser(newUser);
       // TODO when response will be valid json
+      console.log('TODO when response will be valid json')
+      //addUser(newUser);
       // go to magic trick login
       // navigate(screen.ROOT_SCREEN);
     }
   };
 
   renderInputField = value =>
-    <TextField label={value[0].toUpperCase() + value.slice(1)}
-               type={value === 'password' ? 'password' : 'search'}
-               error={this.props.notification.showSnackBar}
-               value={this.state[value]}
-               onChange={({target}) => this.setState({[value]: target.value})}
-               margin='normal'
+    <TextField error={this.props.notification.showSnackBar}
                fullWidth
+               margin='normal'
+               onChange={({target}) => this.setState({[value]: target.value})}
+               type={value === 'password' ? 'password' : 'search'}
+               value={this.state[value]}
+               label={value[0].toUpperCase() + value.slice(1)}
     />;
-
 
   render() {
     const {name, password} = this.state;
 
     return (
-      <div>
+      <Wrap>
+        <Title variant='display2'>
+          {[...'Login'].map((char, index) =>
+            <Fade in={true} key={index.toString()} timeout={5000 + (index*2000)}>
+              <span>{char}</span>
+            </Fade>
+          )}
+        </Title>
         {this.renderInputField('name')}
         {this.renderInputField('password')}
 
         <Collapse in={!!(name.length && password.length)}>
           <WrapButtons>
-            <LoginBtn variant='outlined' color='primary' size='large'
-                      onClick={() => this.handleLogin(name, password)}>
+            <LoginBtn onClick={() => this.handleLogin(name, password)}
+                      color='primary' size='large' variant='outlined'>
               Login
             </LoginBtn>
           </WrapButtons>
         </Collapse>
 
-        <Typography variant='body2' color='textSecondary'>Or login via</Typography>
+        <Typography color='textSecondary' variant='body2'>Or login via</Typography>
         <WrapButtons>
-          <Slide timeout={500} direction='down' in={true}>
+          <Slide direction='down' in={true} timeout={500}>
             <FacebookProvider appId='1793837897321083'>
               <LoginFacebook
-                scope='email'
-                onResponse={this.handleLoginFacebook}
                 onError={this.handleLoginFacebook}
-              >
+                onResponse={this.handleLoginFacebook}
+                scope='email'>
                 <FacebookLoginBtn>
                   <FacebookIcon viewBox='0 0 130 130' style={{color: muiPalette.common.white}}/>
                   <Typography variant='button' color='inherit'>Facebook</Typography>
@@ -141,19 +150,16 @@ class LoginForm extends React.PureComponent {
             </FacebookProvider>
           </Slide>
           <Slide timeout={700} direction='down' in={true}>
-            <GoogleLoginBtn
-              clientId='999108389649-2kil7c0ipbmf5q2hcjnl35alln5t7cko.apps.googleusercontent.com'
-              onSuccess={this.handleLoginGoogle}
-              onFailure={this.handleLoginGoogle}
-              style={{}}
-            >
-              <GoogleIcon viewBox='0 0 520 520' style={{color: muiPalette.common.white}}/>
-              <Typography variant='button' color='inherit'>Google</Typography>
+            <GoogleLoginBtn clientId='999108389649-2kil7c0ipbmf5q2hcjnl35alln5t7cko.apps.googleusercontent.com'
+                            onFailure={this.handleLoginGoogle}
+                            onSuccess={this.handleLoginGoogle}
+                            style={{}}>
+              <GoogleIcon style={{color: muiPalette.common.white}} viewBox='0 0 520 520'/>
+              <Typography color='inherit' variant='button'>Google</Typography>
             </GoogleLoginBtn>
           </Slide>
         </WrapButtons>
-
-      </div>
+      </Wrap>
     )
   }
 }
