@@ -1,7 +1,4 @@
 /node_modules
-bundle.js
-npm-debug.log
-.sass-cache
-# IntelliJ
-*.iml
+/dist
 /.idea
+package-lock.json
