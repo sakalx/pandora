@@ -4,9 +4,10 @@ const sourceMap = isProd ? 'nosources-source-map' : 'eval-source-map';
 const
   path = require('path'),
   webpack = require('webpack'),
+  WebpackPwaManifest = require('webpack-pwa-manifest'),
   CleanWebpackPlugin = require('clean-webpack-plugin'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
-  FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+  FaviconWebpackPlugin = require('favicons-webpack-plugin');
 
 const
   develop = 'src',
@@ -24,7 +25,7 @@ const commonsChunk = new webpack.optimize.CommonsChunkPlugin({
   name: ['index', 'vendor'],
 });
 
-const favicons = new FaviconsWebpackPlugin({
+const favicon = new FaviconWebpackPlugin({
   logo: `./${develop}/favicon/logo.png`,
   prefix: 'favicon/',
   emitStats: false,
@@ -55,6 +56,22 @@ const htmlIndex = new HtmlWebpackPlugin({
 const uglifyJs = new webpack.optimize.UglifyJsPlugin({
   parallel: {cache: true, workers: 2},
   sourceMap: true,
+});
+
+const pwaManifest = new WebpackPwaManifest({
+  name: 'BidWin project reWriter',
+  short_name: 'bidWin',
+  description: 'BidWin is a next-generation content delivery!',
+  background_color: '#303f9f',
+  theme_color: '#303f9f',
+  start_url: '/',
+  icons: [
+    {
+      src: path.resolve('src/favicon/logo.png'),
+      sizes: [96, 128, 192, 256, 384, 512],
+      destination: path.join('assets', 'icons')
+    }
+  ]
 });
 
 const definePlugin = new webpack.DefinePlugin({
@@ -111,7 +128,6 @@ const config = {
     path: DIST_DIR + '/',
     filename: 'js/[name].[chunkhash].bundle.js',
     sourceMapFilename: '[file].map',
-   // publicPath: '/',
   },
 
   module: {
@@ -170,9 +186,10 @@ const config = {
     cleanFolderProd,
     commonsChunk,
     definePlugin,
-    favicons,
+    favicon,
     htmlIndex,
     uglifyJs,
+    pwaManifest,
   ] : [
     commonsChunk,
     htmlIndex,
