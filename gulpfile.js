@@ -1,4 +1,5 @@
 const gulp = require('gulp');
+const del = require('del');
 const encryption = require('encryption-gulp');
 
 const KEY = require('./KEY');
@@ -32,8 +33,10 @@ const assets = (pathIn, pathOut) => {
     .pipe(gulp.dest(pathOut));
 };
 
+gulp.task('clean', () => del(['src-encrypted/**', '!src-encrypted'], {force:true}));
+
 gulp.task('addAssetsSrc', () => assets(pathSrc.assets, path.encrypted));
 gulp.task('addAssetsEncrypt', () => assets(pathEncrypt.assets, path.decrypted));
 
-gulp.task('encrypting', ['addAssetsSrc'], () => encrypt(pathSrc.js, path.encrypted, false));
+gulp.task('encrypting', ['clean', 'addAssetsSrc'], () => encrypt(pathSrc.js, path.encrypted, false));
 gulp.task('decrypting', ['addAssetsEncrypt'], () => encrypt(pathEncrypt.js, path.decrypted, true));
