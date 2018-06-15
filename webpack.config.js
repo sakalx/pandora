@@ -158,12 +158,6 @@ const config = {
         include: path.resolve(__dirname, `${develop}/assets/fonts/`),
         test: /\.(woff|woff2|svg)$/,
         use: fontConfig,
-      },
-      // TODO: move all css to styled-components
-      {
-        include: path.resolve(__dirname, `${develop}/old-css-support/css/`),
-        test:/\.css$/,
-        use:['style-loader','css-loader']
       }
     ],
   },
