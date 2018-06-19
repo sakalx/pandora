@@ -11,7 +11,7 @@ const
 
 const
   develop = 'src',
-  production = 'dist';
+  production = 'public';
 
 const
   SRC_DIR = path.join(__dirname, develop),
@@ -26,7 +26,7 @@ const commonsChunk = new webpack.optimize.CommonsChunkPlugin({
 });
 
 const favicon = new FaviconWebpackPlugin({
-  logo: `./${develop}/favicon/logo.png`,
+  logo: `./${develop}/assets/favicon/logo.png`,
   prefix: 'favicon/',
   emitStats: false,
   inject: true,
@@ -67,7 +67,7 @@ const pwaManifest = new WebpackPwaManifest({
   start_url: '/',
   icons: [
     {
-      src: path.resolve('src/favicon/logo.png'),
+      src: path.resolve(`./${develop}/assets/favicon/logo.png`),
       sizes: [96, 128, 192, 256, 384, 512],
       destination: path.join('assets', 'icons')
     }
