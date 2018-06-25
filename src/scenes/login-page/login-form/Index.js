@@ -6,7 +6,6 @@ import {
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {getUser} from 'root/redux-core/actions/user';
 import {toggleSnackbar} from 'root/redux-core/actions/notification';
 
 import Collapse from '@material-ui/core/Collapse';
@@ -36,9 +35,13 @@ class LoginForm extends React.PureComponent {
 
   handleSocialLogin = provider =>
     signInWithSocial(provider)
-      .then(response =>
-        this.props.toggleSnackbar(`Welcome ${response.user.displayName}`))
-      .catch(error => this.props.toggleSnackbar(error.message));
+      .then(user => {
+        this.props.toggleSnackbar(`Welcome ${user.firstName} ✨`)
+      })
+      .catch(error => {
+        console.error(error);
+        this.props.toggleSnackbar(error.message)
+      });
 
   renderInputField = value =>
     <FormControl>
@@ -108,7 +111,6 @@ const mapStateToProps = ({notification}) => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   toggleSnackbar,
-  getUser,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);

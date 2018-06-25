@@ -1,5 +1,8 @@
 import React from 'react';
 
+import {createUser} from 'root/firebase-core/authentication';
+import {setUser} from 'root/firebase-core/collections/users';
+
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
@@ -19,11 +22,11 @@ class SignUpForm extends React.PureComponent {
   state = {
     steps: {
       // index 0 === value, index 1 === error, index 2 === error Message,
-      firstName: ['', false, 'You can use letters & numbers'],
-      lastName: ['', false, 'You can use letters & numbers'],
-      email: ['', false, 'email@example.com'],
-      password: ['', false, 'Use 6 or more characters with a mix of letters, numbers & symbols'],
-      confirmPassword: ['', false, 'Those passwords didn\'t match. Try again.'],
+      firstName: ['serhii', false, 'You can use letters & numbers'],
+      lastName: ['sakal', false, 'You can use letters & numbers'],
+      email: ['adsddaw@mafa.is', false, 'email@example.com'],
+      password: ['123456q', false, 'Use 6 or more characters with a mix of letters, numbers & symbols'],
+      confirmPassword: ['123456q', false, 'Those passwords didn\'t match. Try again.'],
     },
     activeStep: 0,
   };
@@ -32,16 +35,19 @@ class SignUpForm extends React.PureComponent {
     const {toggleSnackbar} = this.props;
     const {firstName, lastName, email, password} = this.state.steps;
 
-  /*  firebase.auth().createUserWithEmailAndPassword(email[0], password[0])
-      .then(() => {
-        const user = firebase.auth().currentUser;
-        const displayName = `${firstName[0]} ${lastName[0]}`;
+    const newUser = {
+      email: email[0],
+      firstName: firstName[0],
+      lastName: lastName[0],
+    };
 
-        user.updateProfile({displayName})
-          .then(() => toggleSnackbar(`Welcome ${displayName} ✨`))
-          .catch(error => toggleSnackbar(error.message));
-      })
-      .catch(error => toggleSnackbar(error.message));*/
+    createUser(email[0], password[0])
+      .then(() => setUser(newUser))
+      .then(() => toggleSnackbar(`Welcome ${firstName[0]} ✨`))
+      .catch(error => {
+        toggleSnackbar(error.message);
+        console.error(error)
+      });
   };
 
   handleNext = step => {

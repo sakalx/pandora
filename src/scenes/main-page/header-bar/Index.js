@@ -4,9 +4,6 @@ import {signOut} from 'root/firebase-core/authentication';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-
-//import {logOut} from 'root/redux-core/actions/user';
-
 import Avatar from '@material-ui/core/Avatar';
 import Fade from '@material-ui/core/Fade';
 import IconButton from '@material-ui/core/IconButton';
@@ -35,6 +32,23 @@ class HeaderBar extends React.PureComponent {
     anchorEl: null,
   };
 
+  renderMenu = () => {
+    const {anchorEl} = this.state;
+
+    return (
+      <Menu anchorEl={anchorEl}
+            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+            id='menu-appbar'
+            onClose={() => this.setState({anchorEl: null})}
+            open={Boolean(anchorEl)}
+            transformOrigin={{horizontal: 'right', vertical: 'top'}}>
+        {this.renderMenuItem('Profile', <UserIcon/>, () => this.setState({anchorEl: null}))}
+        <Hr light/>
+        {this.renderMenuItem('Logout', <LogoutIcon/>, () => signOut())}
+      </Menu>
+    )
+  };
+
   renderMenuItem = (text, icon, callBack) =>
     <MenuItem onClick={callBack}>
       <ListItemIcon>
@@ -44,9 +58,7 @@ class HeaderBar extends React.PureComponent {
     </MenuItem>;
 
   render() {
-    const {user} = this.props;
     const {anchorEl} = this.state;
-    const openMenu = Boolean(anchorEl);
 
     return (
       <SlideAnimation direction='right' in={true} mountOnEnter timeout={1000}>
@@ -61,7 +73,7 @@ class HeaderBar extends React.PureComponent {
             <div>
               <User>
                 <IconButton aria-haspopup='true'
-                            aria-owns={openMenu ? 'menu-appbar' : null}
+                            aria-owns={Boolean(anchorEl) ? 'menu-appbar' : null}
                             color='inherit'
                             onClick={({currentTarget}) => this.setState({anchorEl: currentTarget})}>
                   <Avatar>
@@ -69,19 +81,10 @@ class HeaderBar extends React.PureComponent {
                   </Avatar>
                 </IconButton>
                 <UserName color='inherit' variant='subheading'>
-                  {user.name}
+                  Sakal
                 </UserName>
               </User>
-              <Menu anchorEl={anchorEl}
-                    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                    id='menu-appbar'
-                    onClose={() => this.setState({anchorEl: null})}
-                    open={openMenu}
-                    transformOrigin={{horizontal: 'right', vertical: 'top'}}>
-                {this.renderMenuItem('Profile', <UserIcon/>, () => this.setState({anchorEl: null}))}
-                <Hr light/>
-                {this.renderMenuItem('Logout', <LogoutIcon/>, () => signOut())}
-              </Menu>
+              {this.renderMenu()}
             </div>
           </Header>
         </Wrap>
