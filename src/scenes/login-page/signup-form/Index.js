@@ -5,9 +5,10 @@ import {setUser} from 'root/firebase-core/collections/users';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-
 import {toggleSnackbar} from 'root/redux-core/actions/notification';
+
 import {camelCaseToString} from 'root/helpers/camel-case';
+import {validEmail, validName, validPassword} from 'root/helpers/validator';
 
 import Button from '@material-ui/core/Button';
 import Step from '@material-ui/core/Step';
@@ -17,7 +18,6 @@ import Stepper from '@material-ui/core/Stepper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-// TODO rewrite with routers (too huge Component)
 class SignUpForm extends React.PureComponent {
   state = {
     steps: {
@@ -81,10 +81,6 @@ class SignUpForm extends React.PureComponent {
     const {steps} = this.state;
     const [, , errMsg] = steps[step];
     const [stepValue] = steps[step];
-
-    const validString = string => /^[a-zA-Z][a-zA-Z0-9]{1,12}$/igm.test(string);
-    const validEmail = email => /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/igm.test(email);
-    const validPassword = password => /(?=^.{6,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/igm.test(password);
     const validConfirmPassword = stepValue => steps.password[0] === stepValue;
 
     const validation = (step, isValid) => this.setState({
@@ -97,7 +93,7 @@ class SignUpForm extends React.PureComponent {
     switch (step) {
       case 'firstName':
       case 'lastName':
-        validation(step, validString);
+        validation(step, validName);
         break;
       case 'email':
         validation(step, validEmail);

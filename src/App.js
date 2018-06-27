@@ -1,12 +1,6 @@
 import React from 'react';
-import {BrowserRouter, Redirect, Route, Switch} from 'react-router-dom';
-
-//import {onAuthChanged} from 'root/firebase-core/authentication';
-
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-
-import {getUser} from './redux-core/actions/user';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import PrivateRoute from 'root/components/PrivateRoute'
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -19,9 +13,6 @@ import SnackBarMessage from 'root/components/SnackBarMessage';
 import styled from 'styled-components';
 import srcBackground from 'root/assets/img/background.jpg';
 
-
-import PrivateRoute from 'root/components/PrivateRoute'
-
 const CenterWrap = styled('div')`
   align-items: center;
   background-image: url(${srcBackground});
@@ -32,23 +23,6 @@ const CenterWrap = styled('div')`
 
 // TODO set aria-label for all button => SpeedDial !!!
 class App extends React.Component {
-
-  componentDidMount() {
-    const {getUser} = this.props;
-
-
-
-
-
-/*    firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          getUser(user)
-        } else {
-          getUser(user)
-        }
-      }
-    )*/
-  }
 
   render() {
     return (
@@ -69,10 +43,4 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = ({user}) => ({user});
-
-const mapDispatchToProps = dispatch => bindActionCreators({
-  getUser,
-}, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default App

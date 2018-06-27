@@ -4,40 +4,50 @@ import firebaseApp from './initializeApp';
 import {setUser, getUser} from './collections/users';
 
 import store from 'root/redux-core/store';
+import {userActionsTypes} from 'root/redux-core/types';
 import {logInUser} from 'root/redux-core/actions/user';
 
+const addUserIntoRedux = data => store.dispatch(logInUser(data));
+const logOut = () => store.dispatch({type: userActionsTypes.LOG_OUT});
+
 // listener for signIn - signOut
-firebaseApp.auth().onAuthStateChanged(user => {
-  const {dispatch} = store;
-  user ? dispatch(logInUser(user.uid)) : dispatch(logInUser(null));
-});
+firebaseApp.auth().onAuthStateChanged(user =>
+  user
+    ? getUser(user.uid).then(user => user && addUserIntoRedux(user))
+    : logOut()
+);
 
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
 export const facebookProvider = new firebase.auth.FacebookAuthProvider();
 
 // return promise with user info
-export const signInWithSocial = provider =>
-  firebaseApp.auth().signInWithPopup(provider)
+export const signInWithSocial = provider => {
+  return firebaseApp.auth().signInWithPopup(provider)
     .then(({user}) => getUser(user.uid)
-      .then(dataUserCollection => {
-        if (!dataUserCollection) {
-          const name = user.displayName.split(' ');
-          const newUser = {
-            photoURL: user.photoURL,
-            firstName: name[0],
-            lastName: name[1],
-            email: user.email,
-          };
+      .then(userCollection => _getUserCollection(user, userCollection)));
 
-          setUser(newUser);
-          return newUser
-        }
-        return dataUserCollection
-      }));
+  function _getUserCollection(user, userCollection) {
+    const name = user.displayName.split(' ');
+    const newUser = {
+      photoURL: user.photoURL,
+      firstName: name[0],
+      lastName: name[1],
+      email: user.email,
+    };
+
+    return !userCollection
+      ? setUser(newUser).then(user => {
+        addUserIntoRedux(user);
+        return user
+      })
+      : userCollection;
+  }
+};
 
 // return promise with user info
 export const signInWithEmail = (email, password) =>
-  firebaseApp.auth().signInWithEmailAndPassword(email, password);
+  firebaseApp.auth().signInWithEmailAndPassword(email, password)
+    .then(({user}) => getUser(user.uid));
 
 export const signOut = () => {
   localStorage.clear();

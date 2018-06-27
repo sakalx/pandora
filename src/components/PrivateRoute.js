@@ -7,7 +7,7 @@ import LoginScreen from 'root/scenes/login-page';
 
 const PrivateRoute = ({component: Component, user, ...rest}) => {
   return (
-    user.id
+    (user && user.id)
       ? <Route{...rest} render={props => <Component {...props}/>}/>
       : <LoginScreen/>
   )

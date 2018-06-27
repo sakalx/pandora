@@ -1,7 +1,6 @@
 import React from 'react';
 import {signOut} from 'root/firebase-core/authentication';
 
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 import Avatar from '@material-ui/core/Avatar';
@@ -11,6 +10,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+
+import ProfileDrawer from '../profile-drawer'
 
 import logoSrc from 'root/assets/img/bidwin-logo-180x72.png';
 import LogoutIcon from '@material-ui/icons/ExitToApp';
@@ -42,7 +43,11 @@ class HeaderBar extends React.PureComponent {
             onClose={() => this.setState({anchorEl: null})}
             open={Boolean(anchorEl)}
             transformOrigin={{horizontal: 'right', vertical: 'top'}}>
-        {this.renderMenuItem('Profile', <UserIcon/>, () => this.setState({anchorEl: null}))}
+        {this.renderMenuItem('Profile', <UserIcon/>, () => {
+          this.openDrawer();
+          this.setState({anchorEl: null})
+        })
+        }
         <Hr light/>
         {this.renderMenuItem('Logout', <LogoutIcon/>, () => signOut())}
       </Menu>
@@ -58,43 +63,47 @@ class HeaderBar extends React.PureComponent {
     </MenuItem>;
 
   render() {
+    const {user} = this.props;
     const {anchorEl} = this.state;
 
     return (
-      <SlideAnimation direction='right' in={true} mountOnEnter timeout={1000}>
-        <Wrap position='static'>
-          <Header>
-            <Logo alt='Logo' src={logoSrc}/>
-            <Fade in={true} timeout={3500}>
-              <Title color='inherit' variant='title'>
-                BidWin is a next-generation of content delivery
-              </Title>
-            </Fade>
-            <div>
-              <User>
-                <IconButton aria-haspopup='true'
-                            aria-owns={Boolean(anchorEl) ? 'menu-appbar' : null}
-                            color='inherit'
-                            onClick={({currentTarget}) => this.setState({anchorEl: currentTarget})}>
-                  <Avatar>
-                    <UserIcon/>
-                  </Avatar>
-                </IconButton>
-                <UserName color='inherit' variant='subheading'>
-                  Sakal
-                </UserName>
-              </User>
-              {this.renderMenu()}
-            </div>
-          </Header>
-        </Wrap>
-      </SlideAnimation>
+      <React.Fragment>
+        <SlideAnimation direction='right' in={true} mountOnEnter timeout={1000}>
+          <Wrap position='static'>
+            <Header>
+              <Logo alt='Logo' src={logoSrc}/>
+              <Fade in={true} timeout={3500}>
+                <Title color='inherit' variant='title'>
+                  BidWin is a next-generation of content delivery
+                </Title>
+              </Fade>
+              <div>
+                <User>
+                  <IconButton aria-haspopup='true'
+                              aria-owns={Boolean(anchorEl) ? 'menu-appbar' : null}
+                              color='inherit'
+                              onClick={({currentTarget}) => this.setState({anchorEl: currentTarget})}>
+                    <Avatar alt={user.lastName} src={user.photoURL}>
+                      {!user.photoURL && <UserIcon/>}
+                    </Avatar>
+                  </IconButton>
+                  <UserName color='inherit' variant='subheading'>
+                    {user.firstName}
+                  </UserName>
+                </User>
+                {this.renderMenu()}
+              </div>
+            </Header>
+          </Wrap>
+        </SlideAnimation>
+        <ProfileDrawer user={user} handleOpenDrawer={toggleDrawer => this.openDrawer = toggleDrawer}/>
+      </React.Fragment>
     )
   }
 }
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  //logOut,
-}, dispatch);
+const mapStateToProps = ({user}) => ({
+  user,
+});
 
-export default connect(null, mapDispatchToProps)(HeaderBar);
+export default connect(mapStateToProps, null)(HeaderBar);

@@ -10,12 +10,12 @@ const usersCollection = firestore.collection('users');
 // return promise when it done
 export const setUser = user => {
   const id = firebase.auth().currentUser.uid;
-
-  return usersCollection.doc(id).set({
+  const newUser = {
     ...user,
     admin: false,
     id,
-  })
+  };
+  return usersCollection.doc(id).set(newUser).then(() => newUser)
 };
 
 // return promise when it done

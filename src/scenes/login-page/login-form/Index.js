@@ -23,25 +23,29 @@ import {FacebookIcon, GoogleIcon} from 'root/icons';
 
 class LoginForm extends React.PureComponent {
   state = {
-    email: '',
-    password: '',
+    email: 'adsddaw@mafa.as',
+    password: '111111q',
   };
 
   handleLogin = (email, password) => {
+    const {toggleSnackbar} = this.props;
     signInWithEmail(email, password)
-      .then(res => console.log(res))
-      .catch(error => this.props.toggleSnackbar(error.message));
-  };
-
-  handleSocialLogin = provider =>
-    signInWithSocial(provider)
-      .then(user => {
-        this.props.toggleSnackbar(`Welcome ${user.firstName} ✨`)
-      })
+      .then(user => toggleSnackbar(`Welcome ${user.firstName} ✨`))
       .catch(error => {
         console.error(error);
-        this.props.toggleSnackbar(error.message)
+        toggleSnackbar(error.message)
       });
+  };
+
+  handleSocialLogin = provider => {
+    const {toggleSnackbar} = this.props;
+    signInWithSocial(provider)
+      .then(user => toggleSnackbar(`Welcome ${user.firstName} ✨`))
+      .catch(error => {
+        console.error(error);
+        toggleSnackbar(error.message)
+      });
+  };
 
   renderInputField = value =>
     <FormControl>
