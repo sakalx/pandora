@@ -96,7 +96,7 @@ class HeaderBar extends React.PureComponent {
             </Header>
           </Wrap>
         </SlideAnimation>
-        <ProfileDrawer user={user} handleOpenDrawer={toggleDrawer => this.openDrawer = toggleDrawer}/>
+        <ProfileDrawer handleOpenDrawer={toggleDrawer => this.openDrawer = toggleDrawer}/>
       </React.Fragment>
     )
   }

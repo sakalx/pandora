@@ -1,7 +1,12 @@
 import React from 'react';
+import {updateUserEmail, updateUserProfile, currentUser} from 'root/firebase-core/authentication'
+
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {toggleSnackbar} from 'root/redux-core/actions/notification';
 
 import {camelCaseToString} from 'root/helpers/camel-case';
-import {validName, validEmail} from 'root/helpers/validator';
+import {validatorName, validatorEmail} from 'root/helpers/validator';
 
 import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
@@ -47,26 +52,44 @@ class ProfileDrawer extends React.PureComponent {
   toggleDrawer = (open = true) => this.setState({open});
 
   handleEditField = field => {
-    const [value, onEdit, , errorMsg] = this.state[field];
+    const {toggleSnackbar} = this.props;
+    const {email, firstName, lastName} = this.state;
+    const [value, onEdit, ...rest] = this.state[field];
 
     if (onEdit) {
-      field === 'email'
-        ? this._validatorField(validEmail, field)
-        : this._validatorField(validName, field);
+      if (field === 'email') {
+        this._validation(validatorEmail, field)
+        && updateUserEmail(email[0]).then(() =>
+          toggleSnackbar('Email has been successfully updated 🔥'))
+          .catch(error => {
+            console.error(error);
+            toggleSnackbar(error.message)
+          });
+      } else {
+        this._validation(validatorName, field)
+        && updateUserProfile({firstName: firstName[0], lastName: lastName[0]})
+          .then(() => toggleSnackbar(`${camelCaseToString(field)} has been successfully updated 🔥`))
+          .catch(error => {
+            console.error(error);
+            toggleSnackbar(error.message)
+          });
+      }
     } else {
-      this.setState({[field]: [value, true, false, errorMsg]})
+      this.setState({[field]: [value, true, ...rest]})
     }
   };
 
-  _validatorField = (validator, field) => {
+  _validation = (validator, field) => {
     const {user} = this.props;
     const [value, , , errorMsg] = this.state[field];
 
-    validator(value)
-      ? this.setState({[field]: [value, false, false, errorMsg]})
-      : this.setState({[field]: [user[field], true, true, errorMsg]})
+    if (validator(value)) {
+      this.setState({[field]: [value, false, false, errorMsg]});
+      return true
+    }
+    this.setState({[field]: [user[field], true, true, errorMsg]});
+    return false
   };
-
 
   renderProfileSection = field => {
     const [title, onEdit] = this.state[field];
@@ -140,4 +163,12 @@ class ProfileDrawer extends React.PureComponent {
   }
 }
 
-export default ProfileDrawer;
+const mapStateToProps = ({user}) => ({
+  user,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  toggleSnackbar,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileDrawer);

@@ -10,6 +10,8 @@ import {logInUser} from 'root/redux-core/actions/user';
 const addUserIntoRedux = data => store.dispatch(logInUser(data));
 const logOut = () => store.dispatch({type: userActionsTypes.LOG_OUT});
 
+export const currentUser = () => firebase.auth().currentUser;
+
 // listener for signIn - signOut
 firebaseApp.auth().onAuthStateChanged(user =>
   user
@@ -58,4 +60,21 @@ export const signOut = () => {
 export const createUser = (email, password) =>
   firebaseApp.auth().createUserWithEmailAndPassword(email, password);
 
-// TODO update user password & mail
+// return promise when it done
+export const updateUserProfile = ({firstName = '', lastName = '', photoURL = null}) =>
+  currentUser().updateProfile({
+    displayName: `${firstName} ${lastName}`,
+    photoURL,
+  });
+
+// return promise when it done
+export const updateUserEmail = email => currentUser().updateEmail(email);
+
+// return promise when it done
+export const sendEmailVerification = () => currentUser().sendEmailVerification();
+
+// return promise when it done
+export const updateUserPassword = newPassword => currentUser().updatePassword(newPassword);
+
+// return promise when it done
+export const sendPasswordResetEmail = email => auth.sendPasswordResetEmail(email);

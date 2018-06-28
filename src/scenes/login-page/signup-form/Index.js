@@ -8,7 +8,7 @@ import {connect} from 'react-redux';
 import {toggleSnackbar} from 'root/redux-core/actions/notification';
 
 import {camelCaseToString} from 'root/helpers/camel-case';
-import {validEmail, validName, validPassword} from 'root/helpers/validator';
+import {validatorEmail, validatorName, validatorPassword} from 'root/helpers/validator';
 
 import Button from '@material-ui/core/Button';
 import Step from '@material-ui/core/Step';
@@ -93,13 +93,13 @@ class SignUpForm extends React.PureComponent {
     switch (step) {
       case 'firstName':
       case 'lastName':
-        validation(step, validName);
+        validation(step, validatorName);
         break;
       case 'email':
-        validation(step, validEmail);
+        validation(step, validatorEmail);
         break;
       case 'password':
-        validation(step, validPassword);
+        validation(step, validatorPassword);
         break;
       case 'confirmPassword':
         validation(step, validConfirmPassword);
