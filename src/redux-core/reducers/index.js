@@ -1,16 +1,18 @@
 import {combineReducers} from 'redux';
 import {userActionsTypes} from '../types';
 
-import notification from './notification';
-import user from './user';
-import queries from './queries';
 import aiArticle from './ai-article';
+import onLoad from './onLoad';
+import notification from './notification';
+import queries from './queries';
+import user from './user';
 
 const appReducer = combineReducers({
-  notification,
-  user,
   aiArticle,
+  onLoad,
+  notification,
   queries,
+  user,
 });
 
 const rootReducer = (state, action) => {

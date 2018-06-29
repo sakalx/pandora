@@ -2,8 +2,11 @@ import React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import PrivateRoute from 'root/components/PrivateRoute'
 
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {onLoadingAuth} from 'root/redux-core/actions/onLoad';
 
+import LinearProgress from '@material-ui/core/LinearProgress';
 import MainScreen from './scenes/main-page';
 
 import NotFoundPage from 'root/components/NotFoundPage';
@@ -21,10 +24,27 @@ const CenterWrap = styled('div')`
   min-height: 100vh;
 `;
 
+const ProgressBar = styled(LinearProgress)`
+  flex-grow: 1;
+`;
+
 // TODO set aria-label for all button => SpeedDial !!!
-class App extends React.Component {
+class App extends React.PureComponent {
+
+  componentDidMount() {
+    this.props.onLoadingAuth(true);
+  };
 
   render() {
+    const {onLoad} = this.props;
+
+    if (onLoad.authStateChange) {
+      return (
+        <CenterWrap>
+          <ProgressBar/>
+        </CenterWrap>
+      )
+    }
     return (
       <React.Fragment>
         <CenterWrap>
@@ -43,4 +63,12 @@ class App extends React.Component {
   }
 }
 
-export default App
+const mapStateToProps = ({onLoad}) => ({
+  onLoad,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  onLoadingAuth,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)

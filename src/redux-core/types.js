@@ -3,6 +3,10 @@ export const promise = {
   REJECTED: '_REJECTED',
   FULFILLED: '_FULFILLED',
 };
+export const loaders = {
+  LOADING_AUTH: 'LOADING_AUTH_STATE_CHANGE',
+  LOADING_UPDATE_USER: 'LOADING_UPDATE_USER_PROFILE',
+};
 
 export const notification = {
   TOGGLE_SNACKBAR: 'TOGGLE_SNACKBAR',
@@ -24,4 +28,5 @@ export const article = {
 export const userActionsTypes = {
   LOG_IN: 'LOG_IN_USER',
   LOG_OUT: 'LOG_OUT_USER',
+  UPDATE: 'UPDATE_USER',
 };

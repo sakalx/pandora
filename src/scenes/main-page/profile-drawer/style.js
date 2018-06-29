@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Avatar from '@material-ui/core/Avatar';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import UserIcon from '@material-ui/icons/PersonOutline';
 
 import {muiPalette} from 'root/theme';
@@ -10,8 +11,10 @@ import {muiPalette} from 'root/theme';
 export const Wrap = styled('div')`
   display: flex;
   flex-direction: column;
-  min-width: 50vw;
-  padding: 10px;
+  height: 100%;
+  justify-content: space-evenly;
+  min-width: 30vw;
+  padding: 0 10px;
 `;
 
 export const UserAvatar = styled(Avatar)`
@@ -45,4 +48,8 @@ export const EditButton = styled(IconButton)`
 
 export const EditField = styled(Collapse)`
   margin-bottom: 25px;
+`;
+
+export const ProgressBar = styled(LinearProgress)`
+  flex: 0 1 auto;
 `;

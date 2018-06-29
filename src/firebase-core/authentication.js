@@ -1,22 +1,29 @@
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import firebaseApp from './initializeApp';
-import {setUser, getUser} from './collections/users';
+import {setUserFireStore, getUserFireStore} from './collections/users';
 
 import store from 'root/redux-core/store';
 import {userActionsTypes} from 'root/redux-core/types';
 import {logInUser} from 'root/redux-core/actions/user';
+import {onLoadingAuth} from 'root/redux-core/actions/onLoad';
 
 const addUserIntoRedux = data => store.dispatch(logInUser(data));
+const isLoading = param => store.dispatch(onLoadingAuth(param));
 const logOut = () => store.dispatch({type: userActionsTypes.LOG_OUT});
 
 export const currentUser = () => firebase.auth().currentUser;
 
 // listener for signIn - signOut
-firebaseApp.auth().onAuthStateChanged(user =>
-  user
-    ? getUser(user.uid).then(user => user && addUserIntoRedux(user))
-    : logOut()
+firebaseApp.auth().onAuthStateChanged(user => {
+    if (user) {
+      getUserFireStore(user.uid)
+        .then(user => user && addUserIntoRedux(user) && isLoading(false))
+    } else {
+      logOut();
+      isLoading(false);
+    }
+  }
 );
 
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -25,7 +32,7 @@ export const facebookProvider = new firebase.auth.FacebookAuthProvider();
 // return promise with user info
 export const signInWithSocial = provider => {
   return firebaseApp.auth().signInWithPopup(provider)
-    .then(({user}) => getUser(user.uid)
+    .then(({user}) => getUserFireStore(user.uid)
       .then(userCollection => _getUserCollection(user, userCollection)));
 
   function _getUserCollection(user, userCollection) {
@@ -38,7 +45,7 @@ export const signInWithSocial = provider => {
     };
 
     return !userCollection
-      ? setUser(newUser).then(user => {
+      ? setUserFireStore(newUser).then(user => {
         addUserIntoRedux(user);
         return user
       })
@@ -49,7 +56,7 @@ export const signInWithSocial = provider => {
 // return promise with user info
 export const signInWithEmail = (email, password) =>
   firebaseApp.auth().signInWithEmailAndPassword(email, password)
-    .then(({user}) => getUser(user.uid));
+    .then(({user}) => getUserFireStore(user.uid));
 
 export const signOut = () => {
   localStorage.clear();
