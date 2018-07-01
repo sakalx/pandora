@@ -24,13 +24,34 @@ export const getURLPhoto = () => {
   return userPhotoRef.getDownloadURL()
 };
 
-/*
+/* Rules
 service firebase.storage {
   match /b/{bucket}/o {
-  match /images/{imageId} {
-    // Only allow uploads of any image file that's less than 5MB
-    allow write: if request.resource.size < 5 * 1024 * 1024
-      && request.resource.contentType.matches('image/.*');
+
+    match /users/{userId}/{allPaths=**} {
+    	allow read: if isSignedIn();
+      allow create, update : if isOwner(userId) && isImg();
+      allow delete: if isAdmin();
+    }
+
+
+    /// Functions ///
+    function isSignedIn() {
+      return request.auth.uid != null;
+    }
+
+     function isOwner(userId) {
+      return request.auth.uid == userId ;
+    }
+
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true;
+    }
+
+    function isImg() {
+      return request.resource.size < 2 * 1024 * 1024
+          && request.resource.contentType.matches('image/.*');
+    }
   }
 }
-}*/
+*/

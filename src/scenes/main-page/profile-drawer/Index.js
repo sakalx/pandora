@@ -1,7 +1,7 @@
 import React from 'react';
 import {updateUserEmail, updateUserProfile, currentUser} from 'root/firebase-core/auth/authentication';
 import {updateUserFireStore} from 'root/firebase-core/collections/users';
-import {uploadToFirestorage, getURLPhoto} from 'root/firebase-core/storage/avatars';
+import {uploadToFirestorage, getURLPhoto} from 'root/firebase-core/storage/users-photo';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
