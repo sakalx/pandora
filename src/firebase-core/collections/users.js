@@ -2,8 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 
 const firestore = firebase.firestore();
-const settings = {timestampsInSnapshots: true};
-firestore.settings(settings);
+firestore.settings({timestampsInSnapshots: true});
 
 const usersCollection = firestore.collection('users');
 

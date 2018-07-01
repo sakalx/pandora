@@ -1,7 +1,7 @@
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
-import firebaseApp from './initializeApp';
-import {setUserFireStore, getUserFireStore} from './collections/users';
+import firebaseApp from '../initializeApp';
+import {setUserFireStore, getUserFireStore} from '../collections/users';
 
 import store from 'root/redux-core/store';
 import {userActionsTypes} from 'root/redux-core/types';

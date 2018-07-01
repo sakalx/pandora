@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {createUser} from 'root/firebase-core/authentication';
+import {createUser} from 'root/firebase-core/auth/authentication';
 import {setUser} from 'root/firebase-core/collections/users';
 
 import {bindActionCreators} from 'redux';

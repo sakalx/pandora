@@ -1,5 +1,5 @@
 import React from 'react';
-import {signOut} from 'root/firebase-core/authentication';
+import {signOut} from 'root/firebase-core/auth/authentication';
 
 import {connect} from 'react-redux';
 

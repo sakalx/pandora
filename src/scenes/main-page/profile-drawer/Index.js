@@ -1,6 +1,7 @@
 import React from 'react';
-import {updateUserEmail, updateUserProfile, currentUser} from 'root/firebase-core/authentication';
+import {updateUserEmail, updateUserProfile, currentUser} from 'root/firebase-core/auth/authentication';
 import {updateUserFireStore} from 'root/firebase-core/collections/users';
+import {uploadToFirestorage, getURLPhoto} from 'root/firebase-core/storage/avatars';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -39,6 +40,7 @@ class ProfileDrawer extends React.PureComponent {
     lastName: ['', false, false, 'You can use letters & numbers'],
     open: false,
     photoURL: null,
+    photoFile: null,
   };
 
   componentDidMount() {
@@ -162,9 +164,33 @@ class ProfileDrawer extends React.PureComponent {
     )
   };
 
+
+  handleSelectFile = ({target}) => {
+    const {toggleSnackbar} = this.props;
+    const photoFile = target.files[0];
+
+    if (photoFile) {
+      const {size, type} = photoFile;
+      const isValidImg = (size < 2 * 1024 * 1024) && (type === 'image/png' || type === 'image/jpeg');
+
+      isValidImg
+        ? this.setState({photoFile})
+        : toggleSnackbar('Allowed PNG or JPG format less 2 mb. ⛔')
+    }
+  };
+
+  handleSaveAvatar = () => {
+    const {photoFile} = this.state;
+    const {updateUserReduxStore} = this.props;
+
+    getURLPhoto().then(photoURL => updateUserReduxStore({photoURL})).catch(e => console.error(e));
+    //uploadToFirestorage(photoFile).then(res => console.log(res)).catch(e => console.error(e));
+  };
+
   render() {
     const {onLoad, user} = this.props;
-    //console.log(this.state);
+    const {photoFile} = this.state;
+    console.log(this.state);
 
     return (
       <Drawer anchor='right' open={this.state.open} onClose={() => this.toggleDrawer(false)}>
@@ -174,8 +200,25 @@ class ProfileDrawer extends React.PureComponent {
             <UserAvatar alt={user.lastName} src={user.photoURL}>
               {!user.photoURL && <UserIconAvatar/>}
             </UserAvatar>
-            <Button color='primary' size='small'>Change</Button>
+            <Button color='primary'
+                    onClick={() => this.fileInput.click()}
+                    size='small'>
+              Change
+            </Button>
+            {photoFile &&
+            <Tooltip id={'edit-profile-photo'} placement='top-end'
+                     title='Save'>
+              <EditButton color='primary' onClick={() => this.handleSaveAvatar()}>
+                <SaveIcon/>
+              </EditButton>
+            </Tooltip>}
+            <input onChange={this.handleSelectFile}
+                   ref={fileInput => this.fileInput = fileInput}
+                   style={{display: 'none'}}
+                   type='file'
+            />
           </AvatarSection>
+
           {this.renderProfileSection('firstName')}
           {this.renderProfileSection('lastName')}
           {this.renderProfileSection('email')}

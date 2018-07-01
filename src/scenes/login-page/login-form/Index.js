@@ -2,7 +2,7 @@ import React from 'react';
 
 import {
   facebookProvider, googleProvider, signInWithEmail, signInWithSocial,
-} from 'root/firebase-core/authentication';
+} from 'root/firebase-core/auth/authentication';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
